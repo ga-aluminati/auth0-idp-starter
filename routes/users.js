@@ -1,5 +1,7 @@
 var express = require('express');
 var router = express.Router();
+var GitHub = require('github-api');
+
 
 /* GET users listing. */
 router.get('/', function(req, res, next) {

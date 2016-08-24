@@ -48,8 +48,18 @@ $(document).ready(function() {
           localStorage.setItem('idp_access_token', response.idp_access_token);
         }
       });
+      getPublicRepos();
     });
   });
+
+  var getPublicRepos = function() {
+    $.ajax({
+      url: '/public_repos',
+      method: 'GET'
+    }).done(function(response) {
+      console.log('response: ', response);
+    });
+  };
 
   //retrieve the profile:
   var retrieve_profile = function() {
