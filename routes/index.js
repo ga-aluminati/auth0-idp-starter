@@ -2,6 +2,8 @@ var express = require('express');
 var request = require("request");
 var router = express.Router();
 
+var GitHub = require('github-api');
+
 // middleware to retrieve the identity provider's access token when the user first logged in
 // if there's an auth0-user-id header, automatically get the Identity Provider access token
 // ref: https://auth0.com/docs/what-to-do-once-the-user-is-logged-in/calling-an-external-idp-api
@@ -57,6 +59,25 @@ var setIdentityProviderToken = function(req, res, next) {
     next();
   }
 };
+
+router.get('/public_repos', setIdentityProviderToken, (req, res, next) => {
+  var options = {
+    method: 'GET',
+    url: 'https://api.github.com/user/repos?access_token=' + req.idp_access_token,
+    headers: {
+      'accept': 'Accept: application/vnd.github.v3+json',
+      'User-Agent': 'Auth0 Client'
+    }
+  };
+
+  request(options, function (error, response, body) {
+    if (error) next(error);
+
+    // Now that we have the access token, set it as part of the request so that all routes
+    //  can take advantage of the access token and use it as needed
+    res.json(body);
+  });
+});
 
 /* GET home page. */
 router.get('/', function(req, res, next) {

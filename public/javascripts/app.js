@@ -25,31 +25,27 @@ $(document).ready(function() {
       localStorage.setItem('id_token', authResult.idToken);
       // Display user information
       show_profile_info(profile);
-
-      // There is middleware set up so that if a header of 'auth0-user-id' is set,
-      //  then the access token obtained from the identity provider (e.g. Facebook, GitHub, etc)
-      //  will be set and able to be used by any route in the application
-      $.ajaxSetup({
-        beforeSend: function(xhr) {
-          xhr.setRequestHeader('auth0-user-id', profile.user_id);
-        }
-      });
-
-      // Sometimes we might want to use something like the Facebook JS client library, so we can
-      //  get the access token from our backend, store in localStorage and use it within the client
-      $.ajax({
-        url: '/idp_access_token',
-        method: 'GET'
-      }).done(function(response) {
-        if (response.idp_access_token) {
-          console.log('Identity provider access token: ', response.idp_access_token);
-
-          // We can later retrieve this access token and use it in a client library if we wanted to
-          localStorage.setItem('idp_access_token', response.idp_access_token);
-        }
-      });
     });
   });
+
+  var getPublicRepos = function() {
+    $.ajax({
+      url: '/public_repos',
+      method: 'GET'
+    }).done(function(response) {
+      var result = JSON.parse(response);
+      console.log(result);
+
+      for (var i=0; i<result.length; i++) {
+        $li = $('<li/>');
+        $li.attr('class', 'repo');
+
+        console.log(result[i])
+        $li.text(result[i].name);
+        $('#repos').append($li);
+      }
+    });
+  };
 
   //retrieve the profile:
   var retrieve_profile = function() {
@@ -70,6 +66,31 @@ $(document).ready(function() {
      $('.btn-login').hide();
      $('.avatar').attr('src', profile.picture).show();
      $('.btn-logout').show();
+
+     // There is middleware set up so that if a header of 'auth0-user-id' is set,
+     //  then the access token obtained from the identity provider (e.g. Facebook, GitHub, etc)
+     //  will be set and able to be used by any route in the application
+     $.ajaxSetup({
+       beforeSend: function(xhr) {
+         xhr.setRequestHeader('auth0-user-id', profile.user_id);
+       }
+     });
+
+     // Sometimes we might want to use something like the Facebook JS client library, so we can
+     //  get the access token from our backend, store in localStorage and use it within the client
+     $.ajax({
+       url: '/idp_access_token',
+       method: 'GET'
+     }).done(function(response) {
+       if (response.idp_access_token) {
+         console.log('Identity provider access token: ', response.idp_access_token);
+
+         // We can later retrieve this access token and use it in a client library if we wanted to
+         localStorage.setItem('idp_access_token', response.idp_access_token);
+       }
+     });
+
+     getPublicRepos();
   };
 
   var logout = function() {
