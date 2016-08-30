@@ -2,8 +2,6 @@ var express = require('express');
 var request = require("request");
 var router = express.Router();
 
-var GitHub = require('github-api');
-
 // middleware to retrieve the identity provider's access token when the user first logged in
 // if there's an auth0-user-id header, automatically get the Identity Provider access token
 // ref: https://auth0.com/docs/what-to-do-once-the-user-is-logged-in/calling-an-external-idp-api
